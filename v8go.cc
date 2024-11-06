@@ -505,6 +505,27 @@ int ObjectTemplateInternalFieldCount(TemplatePtr ptr) {
   return obj_tmpl->InternalFieldCount();
 }
 
+void ObjectTemplateSetAccessorProperty(TemplatePtr ptr, const char* key, TemplatePtr get, TemplatePtr set)
+{
+  LOCAL_TEMPLATE(ptr);
+
+  /*
+   *
+  Isolate* iso = tmpl_ptr->iso;      \
+  Locker locker(iso);                \
+  Isolate::Scope isolate_scope(iso); \
+  HandleScope handle_scope(iso);     \
+  Local<Template> tmpl = tmpl_ptr->ptr.Get(iso);
+   */
+  Local<String> key_val =
+      String::NewFromUtf8(iso, key, NewStringType::kNormal).ToLocalChecked();
+  Local<ObjectTemplate> obj_tmpl = tmpl.As<ObjectTemplate>();
+  Local<FunctionTemplate> get_tmpl = get->ptr.Get(iso).As<FunctionTemplate>();
+  Local<FunctionTemplate> set_tmpl = set->ptr.Get(iso).As<FunctionTemplate>();
+
+  return obj_tmpl->SetAccessorProperty(key_val, get_tmpl, set_tmpl);
+}
+
 /********** FunctionTemplate **********/
 
 static void FunctionTemplateCallback(const FunctionCallbackInfo<Value>& info) {

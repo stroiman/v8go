@@ -10,6 +10,7 @@ import "C"
 import (
 	"errors"
 	"runtime"
+	"unsafe"
 )
 
 // PropertyAttribute are the attribute flags for a property on an Object.
@@ -64,6 +65,17 @@ func (o *ObjectTemplate) NewInstance(ctx *Context) (*Object, error) {
 // template will have.
 func (o *ObjectTemplate) SetInternalFieldCount(fieldCount uint32) {
 	C.ObjectTemplateSetInternalFieldCount(o.ptr, C.int(fieldCount))
+}
+
+func (o *ObjectTemplate) SetAccessorProperty(
+	key string,
+	get FunctionTemplate,
+	set FunctionTemplate,
+) {
+	ckey := C.CString(key)
+	defer C.free(unsafe.Pointer(ckey))
+
+	C.ObjectTemplateSetAccessorProperty(o.ptr, ckey, get.ptr, set.ptr)
 }
 
 // InternalFieldCount returns the number of internal fields that instances of this
