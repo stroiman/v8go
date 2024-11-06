@@ -146,8 +146,23 @@ func NewExternalValue(iso *Isolate, val unsafe.Pointer) *Value {
 	}
 }
 
+func NewExternalFromInterface(iso *Isolate, val interface{}) *Value {
+	pointer := (&val)
+	// p := runtime.Pinner{}
+	// p.Pin(pointer)
+	return &Value{
+		ptr: C.NewValueExternal(iso.ptr, unsafe.Pointer(pointer)),
+		// ptr: C.NewValueExternal(iso.ptr, val),
+	}
+}
+
 func (v *Value) External() unsafe.Pointer {
 	return C.ValueToExternal(v.ptr)
+}
+
+func (v *Value) ExternalInterface() interface{} {
+	var data = (*interface{})(C.ValueToExternal(v.ptr))
+	return *data
 }
 
 // Format implements the fmt.Formatter interface to provide a custom formatter
