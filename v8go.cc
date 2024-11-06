@@ -442,6 +442,16 @@ ValuePtr NewValueBigIntFromUnsigned(IsolatePtr iso, uint64_t v) {
   return tracked_value(ctx, val);
 }
 
+ValuePtr NewValueExternal(IsolatePtr iso, void* v) {
+  ISOLATE_SCOPE_INTERNAL_CONTEXT(iso);
+  m_value* val = new m_value;
+  val->id = 0;
+  val->iso = iso;
+  val->ctx = ctx;
+  val->ptr = Global<Value>(iso, External::New(iso, v));
+  return tracked_value(ctx, val);
+}
+
 RtnValue NewValueBigIntFromWords(IsolatePtr iso,
                                  int sign_bit,
                                  int word_count,
@@ -521,6 +531,17 @@ const uint32_t* ValueToArrayIndex(ValuePtr ptr) {
   uint32_t* idx = (uint32_t*)malloc(sizeof(uint32_t));
   *idx = array_index->Value();
   return idx;
+}
+
+void* ValueToExternal(ValuePtr ptr) {
+  // LOCAL_VALUE(val);
+  // val->ptr.Get(iso);
+  //
+  Isolate* iso = ptr->iso;
+
+  Local<External> wrap = Local<External>::Cast(ptr->ptr.Get(iso));
+  void* value = wrap->Value();
+  return value;
 }
 
 int ValueToBoolean(ValuePtr ptr) {
