@@ -68,17 +68,14 @@ func (o *ObjectTemplate) SetInternalFieldCount(fieldCount uint32) {
 }
 
 type AccessProp struct {
-	Get        *FunctionTemplate
-	Set        *FunctionTemplate
+	Get        FunctionCallback
+	Set        FunctionCallback
 	Attributes PropertyAttribute
 }
 
 func (o *ObjectTemplate) SetAccessorProperty(
 	key string,
 	props AccessProp,
-	// get FunctionTemplate,
-	// set FunctionTemplate,
-	// attributes PropertyAttribute,
 ) {
 	ckey := C.CString(key)
 	defer C.free(unsafe.Pointer(ckey))
@@ -87,10 +84,10 @@ func (o *ObjectTemplate) SetAccessorProperty(
 		set C.TemplatePtr
 	)
 	if props.Get != nil {
-		get = props.Get.ptr
+		get = NewFunctionTemplate(o.iso, props.Get).ptr
 	}
 	if props.Set != nil {
-		set = props.Set.ptr
+		set = NewFunctionTemplate(o.iso, props.Set).ptr
 	}
 
 	C.ObjectTemplateSetAccessorProperty(o.ptr, ckey, get, set, C.int(props.Attributes))
