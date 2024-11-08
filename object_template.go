@@ -67,15 +67,33 @@ func (o *ObjectTemplate) SetInternalFieldCount(fieldCount uint32) {
 	C.ObjectTemplateSetInternalFieldCount(o.ptr, C.int(fieldCount))
 }
 
+type AccessProp struct {
+	Get        *FunctionTemplate
+	Set        *FunctionTemplate
+	Attributes PropertyAttribute
+}
+
 func (o *ObjectTemplate) SetAccessorProperty(
 	key string,
-	get FunctionTemplate,
-	set FunctionTemplate,
+	props AccessProp,
+	// get FunctionTemplate,
+	// set FunctionTemplate,
+	// attributes PropertyAttribute,
 ) {
 	ckey := C.CString(key)
 	defer C.free(unsafe.Pointer(ckey))
+	var (
+		get C.TemplatePtr
+		set C.TemplatePtr
+	)
+	if props.Get != nil {
+		get = props.Get.ptr
+	}
+	if props.Set != nil {
+		set = props.Set.ptr
+	}
 
-	C.ObjectTemplateSetAccessorProperty(o.ptr, ckey, get.ptr, set.ptr)
+	C.ObjectTemplateSetAccessorProperty(o.ptr, ckey, get, set, C.int(props.Attributes))
 }
 
 // InternalFieldCount returns the number of internal fields that instances of this
