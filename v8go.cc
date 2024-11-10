@@ -441,9 +441,19 @@ RtnValue FunctionTemplateGetFunction(TemplatePtr ptr, ContextPtr ctx) {
 TemplatePtr FunctionTemplateGetInstanceTemplate(TemplatePtr ptr) {
   LOCAL_TEMPLATE(ptr);
   Local<FunctionTemplate> fn_tmpl = tmpl.As<FunctionTemplate>();
-  m_template *ot = new m_template;
+  m_template* ot = new m_template;
   ot->iso = iso;
   ot->ptr.Reset(iso, fn_tmpl->InstanceTemplate());
+
+  return ot;
+}
+
+TemplatePtr FunctionTemplatePrototypeTemplate(TemplatePtr ptr) {
+  LOCAL_TEMPLATE(ptr);
+  Local<FunctionTemplate> fn_tmpl = tmpl.As<FunctionTemplate>();
+  m_template* ot = new m_template;
+  ot->iso = iso;
+  ot->ptr.Reset(iso, fn_tmpl->PrototypeTemplate());
 
   return ot;
 }
@@ -1261,6 +1271,27 @@ int ObjectDeleteAnyKey(ValuePtr ptr, ValuePtr key) {
 int ObjectDeleteIdx(ValuePtr ptr, uint32_t idx) {
   LOCAL_OBJECT(ptr);
   return obj->Delete(local_ctx, idx).ToChecked();
+}
+
+RtnValue ObjectGetPrototype(ValuePtr ptr) {
+  LOCAL_OBJECT(ptr);
+  RtnValue rtn = {};
+
+  Local<Value> result = obj->GetPrototypeV2();
+  m_value* new_val = new m_value;
+  new_val->id = 0;
+  new_val->iso = iso;
+  new_val->ctx = ctx;
+  new_val->ptr = Global<Value>(iso, result);
+
+  rtn.value = tracked_value(ctx, new_val);
+  return rtn;
+}
+
+void ObjectSetPrototype(ValuePtr ptr, ValuePtr proto_ptr) {
+  LOCAL_OBJECT(ptr);
+  // Local<Context> local_ctx = ctx_ptr->ptr.Get(iso);
+  obj->SetPrototypeV2(local_ctx, proto_ptr->ptr.Get(iso)).Check();
 }
 
 /********** Promise **********/

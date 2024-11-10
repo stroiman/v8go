@@ -119,6 +119,7 @@ extern TemplatePtr NewFunctionTemplate(IsolatePtr iso_ptr, int callback_ref);
 extern RtnValue FunctionTemplateGetFunction(TemplatePtr ptr,
                                             ContextPtr ctx_ptr);
 extern TemplatePtr FunctionTemplateGetInstanceTemplate(TemplatePtr ptr);
+extern TemplatePtr FunctionTemplatePrototypeTemplate(TemplatePtr ptr);
 
 const char* ExceptionGetMessageString(ValuePtr ptr);
 
@@ -137,6 +138,8 @@ int ObjectHasIdx(ValuePtr ptr, uint32_t idx);
 int ObjectDelete(ValuePtr ptr, const char* key);
 int ObjectDeleteAnyKey(ValuePtr ptr, ValuePtr key);
 int ObjectDeleteIdx(ValuePtr ptr, uint32_t idx);
+extern RtnValue ObjectGetPrototype(ValuePtr ptr);
+extern void ObjectSetPrototype(ValuePtr ptr, ValuePtr proto_ptr);
 
 extern RtnValue NewPromiseResolver(ContextPtr ctx_ptr);
 extern ValuePtr PromiseResolverGetPromise(ValuePtr ptr);
