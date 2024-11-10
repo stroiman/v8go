@@ -118,6 +118,7 @@ extern void ObjectTemplateSetAccessorProperty(TemplatePtr ptr,
 extern TemplatePtr NewFunctionTemplate(IsolatePtr iso_ptr, int callback_ref);
 extern RtnValue FunctionTemplateGetFunction(TemplatePtr ptr,
                                             ContextPtr ctx_ptr);
+extern TemplatePtr FunctionTemplateGetInstanceTemplate(TemplatePtr ptr);
 
 const char* ExceptionGetMessageString(ValuePtr ptr);
 
