@@ -120,6 +120,7 @@ extern RtnValue FunctionTemplateGetFunction(TemplatePtr ptr,
                                             ContextPtr ctx_ptr);
 extern TemplatePtr FunctionTemplateGetInstanceTemplate(TemplatePtr ptr);
 extern TemplatePtr FunctionTemplatePrototypeTemplate(TemplatePtr ptr);
+extern void FunctionTemplateInherit(TemplatePtr ptr, TemplatePtr base);
 
 const char* ExceptionGetMessageString(ValuePtr ptr);
 
