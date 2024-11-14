@@ -73,6 +73,12 @@ type AccessProp struct {
 	Attributes PropertyAttribute
 }
 
+type AccessPropWithError struct {
+	Get        FunctionCallbackWithError
+	Set        FunctionCallbackWithError
+	Attributes PropertyAttribute
+}
+
 func (o *ObjectTemplate) SetAccessorProperty(
 	key string,
 	props AccessProp,
@@ -88,6 +94,25 @@ func (o *ObjectTemplate) SetAccessorProperty(
 	}
 	if props.Set != nil {
 		set = NewFunctionTemplate(o.iso, props.Set).ptr
+	}
+
+	C.ObjectTemplateSetAccessorProperty(o.ptr, ckey, get, set, C.int(props.Attributes))
+}
+func (o *ObjectTemplate) SetAccessorPropertyWithError(
+	key string,
+	props AccessPropWithError,
+) {
+	ckey := C.CString(key)
+	defer C.free(unsafe.Pointer(ckey))
+	var (
+		get C.TemplatePtr
+		set C.TemplatePtr
+	)
+	if props.Get != nil {
+		get = NewFunctionTemplateWithError(o.iso, props.Get).ptr
+	}
+	if props.Set != nil {
+		set = NewFunctionTemplateWithError(o.iso, props.Set).ptr
 	}
 
 	C.ObjectTemplateSetAccessorProperty(o.ptr, ckey, get, set, C.int(props.Attributes))
