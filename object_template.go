@@ -69,23 +69,45 @@ func (o *ObjectTemplate) SetInternalFieldCount(fieldCount uint32) {
 
 func (o *ObjectTemplate) SetAccessorProperty(
 	key string,
-	getter FunctionCallbackWithError,
-	setter FunctionCallbackWithError,
+	get *FunctionTemplate,
+	set *FunctionTemplate,
 	attributes PropertyAttribute,
 ) {
 	ckey := C.CString(key)
 	defer C.free(unsafe.Pointer(ckey))
 	var (
-		get C.TemplatePtr
-		set C.TemplatePtr
+		getter C.TemplatePtr
+		setter C.TemplatePtr
 	)
-	if getter != nil {
-		get = NewFunctionTemplateWithError(o.iso, getter).ptr
+	if get != nil {
+		getter = get.ptr
 	}
-	if setter != nil {
-		set = NewFunctionTemplateWithError(o.iso, setter).ptr
+	if set != nil {
+		setter = set.ptr
 	}
-	C.ObjectTemplateSetAccessorProperty(o.ptr, ckey, get, set, C.int(attributes))
+	C.ObjectTemplateSetAccessorProperty(o.ptr, ckey, getter, setter, C.int(attributes))
+}
+
+// SetAccessorPropertyCallback is a simplified version of SetAccessorProperty
+// that automatically create the [FunctionTemplate] for the callbacks when the
+// caller doesn't need the template(s).
+func (o *ObjectTemplate) SetAccessorPropertyCallback(
+	key string,
+	get FunctionCallbackWithError,
+	set FunctionCallbackWithError,
+	attributes PropertyAttribute,
+) {
+	var (
+		getter *FunctionTemplate
+		setter *FunctionTemplate
+	)
+	if get != nil {
+		getter = NewFunctionTemplateWithError(o.iso, get)
+	}
+	if set != nil {
+		setter = NewFunctionTemplateWithError(o.iso, set)
+	}
+	o.SetAccessorProperty(key, getter, setter, attributes)
 }
 
 // InternalFieldCount returns the number of internal fields that instances of this
