@@ -67,21 +67,11 @@ func (o *ObjectTemplate) SetInternalFieldCount(fieldCount uint32) {
 	C.ObjectTemplateSetInternalFieldCount(o.ptr, C.int(fieldCount))
 }
 
-type AccessProp struct {
-	Get        FunctionCallback
-	Set        FunctionCallback
-	Attributes PropertyAttribute
-}
-
-type AccessPropWithError struct {
-	Get        FunctionCallbackWithError
-	Set        FunctionCallbackWithError
-	Attributes PropertyAttribute
-}
-
 func (o *ObjectTemplate) SetAccessorProperty(
 	key string,
-	props AccessProp,
+	getter FunctionCallbackWithError,
+	setter FunctionCallbackWithError,
+	attributes PropertyAttribute,
 ) {
 	ckey := C.CString(key)
 	defer C.free(unsafe.Pointer(ckey))
@@ -89,33 +79,13 @@ func (o *ObjectTemplate) SetAccessorProperty(
 		get C.TemplatePtr
 		set C.TemplatePtr
 	)
-	if props.Get != nil {
-		get = NewFunctionTemplate(o.iso, props.Get).ptr
+	if getter != nil {
+		get = NewFunctionTemplateWithError(o.iso, getter).ptr
 	}
-	if props.Set != nil {
-		set = NewFunctionTemplate(o.iso, props.Set).ptr
+	if setter != nil {
+		set = NewFunctionTemplateWithError(o.iso, setter).ptr
 	}
-
-	C.ObjectTemplateSetAccessorProperty(o.ptr, ckey, get, set, C.int(props.Attributes))
-}
-func (o *ObjectTemplate) SetAccessorPropertyWithError(
-	key string,
-	props AccessPropWithError,
-) {
-	ckey := C.CString(key)
-	defer C.free(unsafe.Pointer(ckey))
-	var (
-		get C.TemplatePtr
-		set C.TemplatePtr
-	)
-	if props.Get != nil {
-		get = NewFunctionTemplateWithError(o.iso, props.Get).ptr
-	}
-	if props.Set != nil {
-		set = NewFunctionTemplateWithError(o.iso, props.Set).ptr
-	}
-
-	C.ObjectTemplateSetAccessorProperty(o.ptr, ckey, get, set, C.int(props.Attributes))
+	C.ObjectTemplateSetAccessorProperty(o.ptr, ckey, get, set, C.int(attributes))
 }
 
 // InternalFieldCount returns the number of internal fields that instances of this
