@@ -114,6 +114,8 @@ extern void ObjectTemplateSetAccessorProperty(TemplatePtr ptr,
                                               TemplatePtr get,
                                               TemplatePtr set,
                                               int attributes);
+extern void ObjectTemplateSetIndexHandler(TemplatePtr ptr,
+                                          int get_callback_ref);
 
 extern TemplatePtr NewFunctionTemplate(IsolatePtr iso_ptr, int callback_ref);
 extern RtnValue FunctionTemplateGetFunction(TemplatePtr ptr,
