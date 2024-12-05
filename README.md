@@ -3,13 +3,28 @@
 This is a fork of https://github.com/tommie/v8go, which is a fork of
 https://github.com/rogchap/v8go at v0.9.0.
 
-The purpose of this fork is to add support for accessors and/or interceptors
+The purpose of this fork is to add support for functionality needed in
+[go-dom](https://github.com/stroiman/go-dom)
 
-- https://v8.dev/docs/embed#accessors
-- https://v8.dev/docs/embed#interceptors
+v8 has a lot of capabilities that aren't exposed in v8go. Features added here
+will should see their way into https://github.com/tommie/v8go
 
-Those features are added to support my other project, create a headless browser
-with a working DOM implementation in Go: https://github.com/stroiman/go-dom
+Features added here
+- `Inspector`, and a custom `InspectorClient`
+  - This is the foundation for attaching a debugger. Currently, only routing
+    `console` messages to Go code is implemented
+- Support for
+  - `FunctionTemplate::Inherit`
+  - `FunctionTemplate::InstanceTemplate()` 
+  - `FunctionTemplate::PrototypeTemplate()`
+  - `Object::SetPrototype` / `Object::GetPrototype`
+  - `ObjectTemplate::SetAccessorProperty`
+  - `ObjectTemplate::SetHandler` (allowing indexed property getters in Go)
+- Store pointers as `external` values on a v8 object.
+  - This may not be that usable though, as you need to pin Go objects. Storing
+  them in a map may seem like a better option in most cases.
+
+Most of the features mentioned exist as POC code in a branch in this repo.
 
 Original readme from tommie/v8go follows
 
