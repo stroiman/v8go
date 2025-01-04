@@ -16,7 +16,7 @@ import (
 	"net/http"
 	"strings"
 
-	v8 "github.com/tommie/v8go"
+	v8 "github.com/stroiman/v8go"
 )
 
 func ExampleFunctionTemplate_fetch() {
